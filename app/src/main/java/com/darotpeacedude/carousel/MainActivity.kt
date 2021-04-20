@@ -25,24 +25,21 @@ class MainActivity : AppCompatActivity() {
 
         val list = arrayListOf<CarouselItem>(
             CarouselItem(R.drawable.ic_baseline_person_24),
-            CarouselItem(R.drawable.ic_baseline_person_24),
-            CarouselItem(R.drawable.ic_baseline_person_24),
-            CarouselItem(R.drawable.ic_baseline_person_24),
-            CarouselItem(R.drawable.ic_baseline_person_24)
+            CarouselItem(R.drawable.ic_baseline_park_24),
+            CarouselItem(R.drawable.ic_baseline_home_repair_service_24),
+            CarouselItem(R.drawable.ic_baseline_import_contacts_24),
+            CarouselItem(R.drawable.ic_baseline_important_devices_24)
         )
 
         val compositePageTransformer = CompositePageTransformer()
-        compositePageTransformer.addTransformer(MarginPageTransformer(40))
-        compositePageTransformer.addTransformer(object : ViewPager2.PageTransformer {
-            override fun transformPage(page: View, position: Float) {
-                val r = 1-Math.abs(position)
-                page.scaleY = 0.85f + r * 0.15f
-            }
-
-        })
+        compositePageTransformer.addTransformer(MarginPageTransformer(20))
+        compositePageTransformer.addTransformer { page, position ->
+            val r = 1 - Math.abs(position)
+            page.scaleY = 0.85f + r * 0.15f
+        }
 
         binding.vp.apply {
-            adapter = CarouselAdapter(list)
+            adapter = CarouselAdapter(list, binding.vp)
             clipToPadding = false
             clipChildren = false
             offscreenPageLimit = 3
@@ -51,19 +48,15 @@ class MainActivity : AppCompatActivity() {
             registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
                 override fun onPageSelected(position: Int) {
                     val size = list.size
-                    handler.removeCallbacks(runnable(size))
-                    handler.postDelayed(runnable(size), 3000)
+                    handler.removeCallbacks(runnable())
+                    handler.postDelayed(runnable(), 3000)
                 }
 
             })
         }
     }
 
-    private fun runnable(count : Int)= Runnable {
-        var itemPos =  binding.vp.currentItem
-        itemPos += 1
-        Log.i("PosBack", "$itemPos")
-        if (itemPos >= count) itemPos = 0
-        binding.vp.currentItem = itemPos
+    private fun runnable()= Runnable {
+        binding.vp.currentItem = binding.vp.currentItem + 1
     }
 }
